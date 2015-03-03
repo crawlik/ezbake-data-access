@@ -1,0 +1,6 @@
+# Index pattern:		<collection name> <JSON string>
+#
+# Example: collection1 { a: 1 },{ unique: true }
+# 
+# Refer to Mongo DB Documentation for example JSON strings to use to create
+# different type of indexes

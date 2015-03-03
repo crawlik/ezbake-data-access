@@ -1,0 +1,119 @@
+<!--
+IMPORTANT: This POM is NOT used for release builds.  Ant is used for that (see build.xml).  Rather, it's provided for
+driver developers who would rather use Maven than Ant as their build tool.
+-->
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ezbake.data</groupId>
+        <artifactId>ezbake-data-access-ezmongo-parent</artifactId>
+        <version>2.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ezmongo-java-driver</artifactId>
+    <packaging>bundle</packaging>
+    <description>EzBake MongoDB Java driver</description>
+    <url>http://www.mongodb.org</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+
+    <developers>
+        <developer>
+            <name>Various</name>
+            <organization>10gen</organization>
+        </developer>
+    </developers>
+
+    <properties>
+        <!--
+            Since for Mongo Client mode, the unit tests require the ezmongo thrift service to be running,
+            We'll skip the tests by default.
+            Tests can be run manually by running "mvn install -DskipTests=false"
+        -->
+        <skipTests>true</skipTests>
+    </properties>
+
+    <dependencies>
+        <!-- EzBake dependencies -->
+        <dependency>
+            <groupId>ezbake.data</groupId>
+            <artifactId>ezmongo-thrift</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ezbake.data</groupId>
+            <artifactId>common-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main</sourceDirectory>
+        <testSourceDirectory>src/test</testSourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                    <argLine>
+                        -Xmx512m -DtokenSource=appInfo -Dezconfiguration.dir=src/test/resources -DunitTestMode=true
+                    </argLine>
+                    <excludes>
+                        <!--
+                        <exclude>**/AggregationTest.java</exclude>
+                        <exclude>**/DBCursorTest.java</exclude>
+                        <exclude>**/JavaClientTest.java</exclude>
+                        <exclude>**/DBTest.java</exclude>
+                        -->
+                        <exclude>**/ReflectionTest.java</exclude>
+                        <exclude>**/DBTCPConnectorTest.java</exclude>
+                        <exclude>**/DBPortTest.java</exclude>
+                        <exclude>**/MongoClientTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>com.mongodb.*</Export-Package>
+                        <Export-Package>org.bson.*</Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!--Because this is a copy of mongoDB code, we won't run the license check-->
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>verify-ezbake-license</id>
+                        <phase/>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

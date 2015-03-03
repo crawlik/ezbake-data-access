@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ezbake.data</groupId>
+        <artifactId>ezbake-data-access-ezelastic-parent</artifactId>
+        <version>2.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>elastic-security</artifactId>
+    <name>Elasticsearch Security Plugin</name>
+
+    <properties>
+        <rpm.artifact.name>ezbake-elasticsearch-security-plugin</rpm.artifact.name>
+    </properties>
+
+    <dependencies>
+        <!-- Third-Party dependencies -->
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- EzBake dependencies -->
+        <dependency>
+            <groupId>ezbake</groupId>
+            <artifactId>ezbake-permission-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ezbake</groupId>
+            <artifactId>thrift-utils</artifactId>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>com.github.tlrx</groupId>
+            <artifactId>elasticsearch-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.elasticsearch</groupId>
+                    <artifactId>elasticsearch</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.carrotsearch</groupId>
+            <artifactId>junit-benchmarks</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-standalone-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <forced>false</forced>
+                            </archive>
+                            <descriptors>
+                                <descriptor>src/main/assemblies/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>rpmbuild</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rpm-maven-plugin</artifactId>
+                        <configuration>
+                            <name>${rpm.artifact.name}</name>
+                            <repackJars>false</repackJars>
+                            <requires combine.self="override">
+                                <require>jre &gt;= 1.7.0</require>
+                                <require>elasticsearch = 1.2.1</require>
+                            </requires>
+                            <mappings combine.self="override">
+                                <mapping>
+                                    <directory>/usr/share/elasticsearch/lib</directory>
+                                    <filemode>644</filemode>
+                                    <username>root</username>
+                                    <groupname>root</groupname>
+                                    <directoryIncluded>false</directoryIncluded>
+                                    <sources>
+                                        <source>
+                                            <location>
+                                                target/${project.artifactId}-${project.version}-jar-with-dependencies.jar
+                                            </location>
+                                            <destination>${rpm.artifact.name}.jar</destination>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

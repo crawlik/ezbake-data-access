@@ -1,0 +1,6 @@
+{ 
+    $cond: [ 
+        { $anyElementTrue: { $map: { input: { $ifNull: [ "%s", [ [] ] ] }, as: "setNeeded", in: { $setIsSubset: [ "$$setNeeded", %s ] } } } },
+        "$$DESCEND", "$$PRUNE" 
+    ]
+}

@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ezbake.data</groupId>
+        <artifactId>ezbake-data-access-parent</artifactId>
+        <version>2.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ezblob</artifactId>
+    <name>EzBake EzBlob Dataset Service</name>
+
+    <dependencies>
+        <!-- Third-Party dependencies -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-auth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.accumulo</groupId>
+            <artifactId>accumulo-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+        </dependency>
+
+        <!-- EzBake dependencies -->
+        <dependency>
+            <groupId>ezbake</groupId>
+            <artifactId>ezbake-audit-auditlogger</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ezbake</groupId>
+            <artifactId>ezbake-configuration-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ezbake</groupId>
+            <artifactId>ezbake-permission-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ezbake</groupId>
+            <artifactId>ezbake-permission-iterator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ezbake</groupId>
+            <artifactId>thrift-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ezbakehelpers</groupId>
+            <artifactId>ezbakehelpers-ezconfigurationhelpers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ezbakehelpers</groupId>
+            <artifactId>accumuloutils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ezbake.data</groupId>
+            <artifactId>ezblob-thrift</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ezbake.data</groupId>
+            <artifactId>common-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ezbake.data</groupId>
+            <artifactId>base-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ezbake.data</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- For testing the blobstore's putBlob(...) method, require a bit more
+                        memory to hold a large byte array -->
+                    <argLine>-Xmx2048m</argLine>
+                    <!-- To create an EzConfiguration object with a properties file, the same
+                        way that thrift-runner will. Alternate approaches, useful depending on your IDE's
+                        support for test frameworks:
+                        <systemPropertyVariables>
+                            <EZCONFIGURATION_DIR>${basedir}/src/main/resources/</EZCONFIGURATION_DIR>
+                        </systemPropertyVariables>
+                        - OR -
+                        <systemProperties>
+                            <property>
+                                <name>EZCONFIGURATION_DIR</name>
+                                <value>${basedir}/src/main/resources/</value>
+                            </property>
+                        </systemProperties> -->
+                    <environmentVariables>
+                        <EZCONFIGURATION_DIR>${basedir}/src/main/resources/</EZCONFIGURATION_DIR>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>rpmbuild</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rpm-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

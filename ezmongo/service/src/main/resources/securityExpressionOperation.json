@@ -1,0 +1,10 @@
+{
+                   '$cond':
+                   [   {'$or':[{'$eq':[{'$ifNull':['%s','dummy_value']},'dummy_value']}
+                           ,{'$or':[{'$eq':[{'$size':'%s'},0]},
+                           {'$gt':[{'$size': {'$setIntersection':['%s',%s]}},0]}
+                           ]}]},
+                           '$$DESCEND',
+                           '$$PRUNE'
+                       ],
+               }

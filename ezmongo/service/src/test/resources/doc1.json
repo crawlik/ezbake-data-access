@@ -1,0 +1,7 @@
+{
+  s: { data: "something secret", _ezFV: [ [ "S" ] ] },
+  b : "blah",
+  ts: { data: "something top secret", _ezFV: [ [ "TS" ] ] },
+  c: { data: "something confidential", _ezFV: [ [ "C" ] ] },
+  u: { data: "something unclass", _ezFV: [ [ "U" ] ] }
+}

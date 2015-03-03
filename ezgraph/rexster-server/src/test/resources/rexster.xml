@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rexster><!--<Tests currently rely on this file being located in 'config/' in the root of this module.>-->
+    <security>
+        <authentication>
+            <type>ezbake.data.graph.rexster.SecurityTokenSecurityFilter</type>
+            <configuration></configuration>
+        </authentication>
+    </security>
+</rexster>

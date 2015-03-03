@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ezbake.data</groupId>
+        <artifactId>ezbake-data-access-ezpostgres-parent</artifactId>
+        <version>2.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ezbake-postgresql-visibility</artifactId>
+    <packaging>nar</packaging>
+    <name>EzBake PostgreSQL Visibility Extension</name>
+
+    <properties>
+        <native.build.skip>true</native.build.skip>
+        <ezbake.rpm.version>2.1</ezbake.rpm.version>
+        <pg.include.server>/usr/pgsql-9.3/include/server</pg.include.server>
+        <pg.lib.pkg>/usr/pgsql-9.3/lib</pg.lib.pkg>
+        <pg.ext.dir>/usr/pgsql-9.3/share/extension</pg.ext.dir>
+        <pg.ext.name>ezbake_visibility</pg.ext.name>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>ezbake</groupId>
+            <artifactId>ezbake-permission-utils-cpp</artifactId>
+            <type>nar</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.maven-nar</groupId>
+                <artifactId>nar-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <ignore>${native.build.skip}</ignore>
+                    <c>
+                        <name>gcc</name>
+                        <systemIncludePaths>
+                            <systemIncludePath>${pg.include.server}</systemIncludePath>
+                        </systemIncludePaths>
+                        <options>
+                            <option>-fmessage-length=0</option>
+                            <option>-Wall</option>
+                            <option>-Wextra</option>
+                            <option>-Werror</option>
+                        </options>
+                    </c>
+                    <libraries>
+                        <library>
+                            <type>shared</type>
+                            <linkCPP>true</linkCPP>
+                        </library>
+                    </libraries>
+                    <linker>
+                        <options>
+                            <option>-fPIC</option>
+                        </options>
+                    </linker>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <configuration>
+                    <excludes combine.children="append">
+                        <exclude>/src/main/resources/ezbake_visibility.control</exclude>
+                        <exclude>/src/main/resources/ezbake_visibility--2.1.sql</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>rpmbuild</id>
+            <properties>
+                <native.build.skip>false</native.build.skip>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rpm-maven-plugin</artifactId>
+                        <configuration>
+                            <name>${project.artifactId}</name>
+                            <needarch>true</needarch>
+                            <requires combine.self="override">
+                                <require>postgresql93</require>
+                                <require>ezbake-permission-utils &gt;= ${ezbake.rpm.version}</require>
+                            </requires>
+                            <obsoletes>
+                                <obsolete>ezpostgres-sql-functions</obsolete>
+                            </obsoletes>
+                            <mappings combine.self="override">
+                                <mapping>
+                                    <directory>${pg.lib.pkg}</directory>
+                                    <filemode>755</filemode>
+                                    <username>root</username>
+                                    <groupname>root</groupname>
+                                    <directoryIncluded>false</directoryIncluded>
+                                    <sources>
+                                        <source>
+                                            <location>
+                                                target/nar/${project.artifactId}-${project.version}-amd64-Linux-gpp-shared/lib/amd64-Linux-gpp/shared/lib${project.artifactId}-${project.version}.so
+                                            </location>
+                                            <destination>${pg.ext.name}.so</destination>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>${pg.ext.dir}</directory>
+                                    <filemode>644</filemode>
+                                    <username>root</username>
+                                    <groupname>root</groupname>
+                                    <directoryIncluded>false</directoryIncluded>
+                                    <sources>
+                                        <source>
+                                            <location>src/main/resources/${pg.ext.name}.control</location>
+                                            <destination>${pg.ext.name}.control</destination>
+                                        </source>
+                                        <source>
+                                            <location>
+                                                src/main/resources/${pg.ext.name}--${ezbake.rpm.version}.sql
+                                            </location>
+                                            <destination>${pg.ext.name}--${ezbake.rpm.version}.sql</destination>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

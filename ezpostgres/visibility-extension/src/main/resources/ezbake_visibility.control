@@ -1,0 +1,5 @@
+# ezbake_visibility extension
+comment = 'Functions and plugins for EzBake visibility control'
+default_version = '2.1'
+module_pathname = '$libdir/ezbake_visibility'
+relocatable = true
