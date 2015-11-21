@@ -25,7 +25,6 @@
 
     <properties>
         <tinkerpop.version>2.6.0</tinkerpop.version>
-	<elasticsearch.version>1.5.2</elasticsearch.version>
     </properties>
 
     <dependencyManagement>
